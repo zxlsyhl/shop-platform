@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class OrderDetailResponse {
+public class OrderDetailResp {
     private Orders order;
     private List<Item> items;
 

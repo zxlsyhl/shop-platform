@@ -2,7 +2,7 @@ package com.example.shop.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.shop.common.ApiResponse;
-import com.example.shop.dto.OrderDetailResponse;
+import com.example.shop.dto.OrderDetailResp;
 import com.example.shop.entity.OrderItem;
 import com.example.shop.entity.Orders;
 import com.example.shop.entity.Product;
@@ -34,7 +34,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<OrderDetailResponse> detail(@PathVariable Long id) {
+    public ApiResponse<OrderDetailResp> detail(@PathVariable Long id) {
         Orders order = ordersMapper.selectById(id);
         List<OrderItem> items = orderItemMapper.selectList(new LambdaQueryWrapper<OrderItem>()
                 .eq(OrderItem::getOrderId, id));
@@ -43,10 +43,10 @@ public class OrderController {
         for (Product product : products) {
             productNameMap.put(product.getId(), product.getName());
         }
-        OrderDetailResponse detail = new OrderDetailResponse();
+        OrderDetailResp detail = new OrderDetailResp();
         detail.setOrder(order);
         detail.setItems(items.stream().map(item -> {
-            OrderDetailResponse.Item i = new OrderDetailResponse.Item();
+            OrderDetailResp.Item i = new OrderDetailResp.Item();
             i.setProductId(item.getProductId());
             i.setProductName(productNameMap.get(item.getProductId()));
             i.setQuantity(item.getQuantity());
