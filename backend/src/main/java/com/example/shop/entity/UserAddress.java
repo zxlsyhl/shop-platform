@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("user")
-public class User {
+@TableName("user_address")
+public class UserAddress {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private String username;
-    private String password;
+    private Long userId;
+    private String receiver;
     private String phone;
+    private String address;
 }
+

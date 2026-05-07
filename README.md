@@ -15,6 +15,7 @@
 3. 启动用户端：
    - `cd user-h5`
    - `npm install`
+   - （可选）复制环境变量模板：`copy .env.example .env.development`
    - `npm run dev`
 4. 启动管理后台：
    - `cd admin-web`
@@ -22,3 +23,9 @@
    - `npm run dev`
 
 默认后端地址：`http://localhost:8080/api`
+
+## 地图配置（高德）
+
+`user-h5` 地址管理页面使用高德 JS API。若控制台开启了安全校验，请在 `user-h5/.env.development` 中配置：
+
+- `VITE_AMAP_SECURITY_CODE=你的securityJsCode`

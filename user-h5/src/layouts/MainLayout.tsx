@@ -1,14 +1,31 @@
 import { TabBar } from "antd-mobile";
-import { AppOutline, UserOutline } from "antd-mobile-icons";
+import { AppOutline, ShopbagOutline, UserOutline } from "antd-mobile-icons";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { CART_UPDATED_EVENT, getCartCount } from "../store/cart";
 
 export default function MainLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [cartCount, setCartCount] = useState(getCartCount());
 
-  const ordersActive =
-    pathname === "/orders" || pathname.startsWith("/order/");
-  const activeKey = ordersActive ? "orders" : "home";
+  let activeKey = "home";
+  if (pathname === "/cart") {
+    activeKey = "cart";
+  } else if (pathname === "/orders" || pathname.startsWith("/order/")) {
+    activeKey = "orders";
+  }
+
+  useEffect(() => {
+    const syncCount = () => setCartCount(getCartCount());
+    window.addEventListener(CART_UPDATED_EVENT, syncCount);
+    window.addEventListener("storage", syncCount);
+    syncCount();
+    return () => {
+      window.removeEventListener(CART_UPDATED_EVENT, syncCount);
+      window.removeEventListener("storage", syncCount);
+    };
+  }, []);
 
   return (
     <div
@@ -26,6 +43,7 @@ export default function MainLayout() {
         activeKey={activeKey}
         onChange={(key) => {
           if (key === "home") navigate("/");
+          else if (key === "cart") navigate("/cart");
           else navigate("/orders");
         }}
         safeArea
@@ -38,6 +56,18 @@ export default function MainLayout() {
               <AppOutline fontSize={24} />
             ) : (
               <AppOutline fontSize={24} style={{ opacity: 0.55 }} />
+            )
+          }
+        />
+        <TabBar.Item
+          key="cart"
+          title="购物车"
+          badge={cartCount > 0 ? cartCount : undefined}
+          icon={(active) =>
+            active ? (
+              <ShopbagOutline fontSize={24} />
+            ) : (
+              <ShopbagOutline fontSize={24} style={{ opacity: 0.55 }} />
             )
           }
         />

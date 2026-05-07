@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { Button, Form, Input, InputNumber, Layout, Menu, Modal, Space, Table, message } from "antd";
 import axios from "axios";
+import type { ColumnsType } from "antd/es/table";
 
 const http = axios.create({ baseURL: "http://localhost:8080/api" });
 const { Header, Sider, Content } = Layout;
@@ -46,7 +47,15 @@ function Dashboard() {
   </>;
 }
 
-function CrudPage({ url, fields }: { url: string; fields: Field[] }) {
+function CrudPage({
+  url,
+  fields,
+  listColumns
+}: {
+  url: string;
+  fields: Field[];
+  listColumns?: ColumnsType<any>;
+}) {
   const [data, setData] = useState<any[]>([]);
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
@@ -86,19 +95,22 @@ function CrudPage({ url, fields }: { url: string; fields: Field[] }) {
     fetchData();
   };
 
+  const tableColumns: ColumnsType<any> = [
+    ...(listColumns || [
+      { title: "ID", dataIndex: "id" },
+      { title: "主要信息", render: (_, row) => row.username || row.name || row.orderNo }
+    ]),
+    {
+      title: "操作", render: (_, row) => <Space>
+        <Button onClick={() => edit(row)}>编辑</Button>
+        <Button danger onClick={() => remove(row.id)}>删除</Button>
+      </Space>
+    }
+  ];
+
   return <>
     <Button type="primary" onClick={create} style={{ marginBottom: 12 }}>新增</Button>
-    <Table rowKey="id" dataSource={data}
-      columns={[
-        { title: "ID", dataIndex: "id" },
-        { title: "主要信息", render: (_, row) => row.username || row.name || row.orderNo },
-        {
-          title: "操作", render: (_, row) => <Space>
-            <Button onClick={() => edit(row)}>编辑</Button>
-            <Button danger onClick={() => remove(row.id)}>删除</Button>
-          </Space>
-        }
-      ]} />
+    <Table rowKey="id" dataSource={data} columns={tableColumns} />
     <Modal title={editingId ? "编辑" : "新增"} open={open} onOk={save} onCancel={() => setOpen(false)}>
       <Form form={form} layout="vertical">
         {fields.map((f) => (
@@ -129,7 +141,12 @@ function HomeLayout() {
         {key === "dashboard" && <Dashboard />}
         {key === "users" && <CrudPage url="/users" fields={[
           { name: "username", label: "用户名" },
-          { name: "password", label: "密码" }
+          { name: "password", label: "密码" },
+          { name: "phone", label: "手机号" }
+        ]} listColumns={[
+          { title: "ID", dataIndex: "id" },
+          { title: "用户名", dataIndex: "username" },
+          { title: "手机号", dataIndex: "phone" }
         ]} />}
         {key === "products" && <CrudPage url="/products" fields={[
           { name: "name", label: "名称" },

@@ -16,8 +16,10 @@ CREATE TABLE IF NOT EXISTS product (
 CREATE TABLE IF NOT EXISTS user (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   username VARCHAR(64) UNIQUE NOT NULL,
-  password VARCHAR(128) NOT NULL
+  password VARCHAR(128) NOT NULL,
+  phone VARCHAR(20)
 );
+ALTER TABLE user ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
 
 CREATE TABLE IF NOT EXISTS admin_user (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -41,6 +43,14 @@ CREATE TABLE IF NOT EXISTS orders (
   shipping_address VARCHAR(255)
 );
 
+CREATE TABLE IF NOT EXISTS user_address (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  receiver VARCHAR(64),
+  phone VARCHAR(20),
+  address VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS order_item (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   order_id BIGINT NOT NULL,
@@ -52,7 +62,9 @@ CREATE TABLE IF NOT EXISTS order_item (
 );
 
 INSERT INTO admin_user(username, password) VALUES ('admin', '123456');
-INSERT INTO user(username, password) VALUES ('user1', '123456');
+INSERT INTO user(username, password, phone) VALUES ('user1', '123456', '13800000001');
+INSERT INTO user_address(user_id, receiver, phone, address)
+VALUES (1, '张三', '13800000001', '上海市浦东新区测试路1号');
 INSERT INTO product(name, spec, ingredient, original_price, sale_price, image_url, maintainer, launch_date)
 VALUES ('示例商品A', '500g', '配方A', 99.00, 79.00, 'https://dummyimage.com/300x300', '张三', '2026-05-01');
 INSERT INTO product(name, spec, ingredient, original_price, sale_price, image_url, maintainer, launch_date)
